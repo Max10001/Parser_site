@@ -145,8 +145,41 @@ def get_data():
     with open('1_products_ids.json', 'w') as file:
         json.dump(products_ids, file, indent=4, ensure_ascii=False)
 
-    print(products_ids)
+    #print(products_ids)
+    json_data = {
+        'productIds': products_ids,
+        'mediaTypes': [
+            'images',
+        ],
+        'category': True,
+        'status': True,
+        'brand': True,
+        'propertyTypes': [
+            'KEY',
+        ],
+        'propertiesConfig': {
+            'propertiesPortionSize': 5,
+        },
+        'multioffer': False,
+    }
 
+    response = requests.post('https://www.mvideo.ru/bff/product-details/list', cookies=cookies, headers=headers,
+                             json=json_data).json()
+    with open('2 items.json', 'w') as file:
+        json.dump(response, file, indent=4, ensure_ascii=False)
+#    print(len(response.get('body').get('products')))
+    products_ids_str = ','.join(products_ids)
+
+    params = {
+        'productIds': products_ids_str,
+        'addBonusRubles': 'true',
+        'isPromoApplied': 'true',
+    }
+
+    response = requests.get('https://www.mvideo.ru/bff/products/prices', params=params, cookies=cookies,
+                            headers=headers).json()
+    with open('3_prices.json', 'w') as file:
+        json.dump(response, file, indent=4, ensure_ascii=False)
 
 def main():
     get_data()
